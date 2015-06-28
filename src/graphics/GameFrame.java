@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -56,8 +57,8 @@ public class GameFrame implements Observer {
 	public void update(Observable o, Object object) {
 		Shape shape = (Shape) object;
 		boolean trouve = false;
-		int h = p.getHeight() - shape.getHeight();
-		int w = p.getWidth() - shape.getWidth();
+		int h = p.getHeight() - shape.getHeight() + 1;
+		int w = p.getWidth() - shape.getWidth() + 1;
 		for (int i = 0; i < h && !trouve; i++) {
 			for (int j = 0; j < w && !trouve; j++) {
 				shape.setLocation(i, j);
@@ -104,6 +105,12 @@ public class GameFrame implements Observer {
 						@Override
 						public void run() {
 							p.resolution();
+							if (!p.checkWin()) {
+								JOptionPane.showMessageDialog(frame,
+									    "Aucune solution trouvée",
+									    "Resultat",
+									    JOptionPane.WARNING_MESSAGE);
+							}
 						}
 					});
 					t.start();
@@ -141,7 +148,7 @@ public class GameFrame implements Observer {
 	/** Lancement de l'application */
 	public static void main(String[] args) {
 		
-		final Plateau p = new Plateau(8, 7);
+		final Plateau p = new Plateau(4, 3);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

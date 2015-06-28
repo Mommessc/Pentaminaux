@@ -44,6 +44,23 @@ public class Plateau {
 		return getBlock(i, j) != 0;
 	}
 	
+	/** Retourne vrai si la shape peut etre placee sur sa position */
+	public boolean isValidLocation(Shape shape) {
+		int line = shape.getLine();
+		int column = shape.getColumn();
+		if (line < 0 || column < 0 || line+shape.getHeight() > getHeight() || column+shape.getWidth() > getWidth()) {
+			return false;
+		}
+		for (int i = 0; i < shape.getHeight(); i++) {
+			for (int j = 0; j < shape.getWidth(); j++) {
+				if (shape.busyCase(i, j) && getBlock(line+i, column+j) > 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	/** Retourne le contenu de la case (i, j) */
 	public int getBlock(int i, int j) {
 		return array[i][j];
@@ -58,7 +75,6 @@ public class Plateau {
 	public void setBlock(int i, int j, int k) {
 		array[i][j] = k;
 	}
-	
 	
 	
 	/** Ajoute une shape au plateau */
@@ -99,24 +115,7 @@ public class Plateau {
 		}
 	}
 	
-	/** Retourne vrai si la shape peut etre placee sur sa position */
-	public boolean isValidLocation(Shape shape) {
-		int line = shape.getLine();
-		int column = shape.getColumn();
-		if (line < 0 || column < 0 || line+shape.getHeight() > getHeight() || column+shape.getWidth() > getWidth()) {
-			return false;
-		}
-		for (int i = 0; i < shape.getHeight(); i++) {
-			for (int j = 0; j < shape.getWidth(); j++) {
-				if (shape.busyCase(i, j) && getBlock(line+i, column+j) > 0) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	
+	/** Retourne vrai si la position des shapes remplies le plateau */
 	public boolean checkWin() {
 		for (int i = 0; i < getHeight(); i++) {
 			for (int j = 0; j < getWidth(); j++) {
@@ -134,6 +133,7 @@ public class Plateau {
 		return true;
 	}
 	
+	/** Retourne toutes les positions possibles d'une shape sur le plateau */
 	private final ArrayList<Point> getAllMove(Shape shape) {
 		ArrayList<Point> arrayPoint = new ArrayList<Point>();
 		Point point = shape.getPoint();
@@ -141,11 +141,9 @@ public class Plateau {
 		for (int i = 4; i < getHeight()-3-shape.getHeight(); i++) {
 			for (int j = 4; j < getWidth()-3-shape.getWidth(); j++) {
 				shape.setLocation(i, j);
-				//placeShape(shape);
 				if (isValidLocation(shape)) {
 					arrayPoint.add(new Point(i, j));
 				}
-				//removeShape(shape);
 			}
 		}
 		
@@ -153,6 +151,7 @@ public class Plateau {
 		return arrayPoint;
 	}
 	
+	/** Resout le casse tete */
 	public void resolution() {
 		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
 		for (Shape shape : getListShape()) {
@@ -162,7 +161,6 @@ public class Plateau {
 		
 		ArrayList<Point> arrayPoint = resolutionAux(new ArrayList<Shape>());
 		if (arrayPoint == null) {
-			System.out.println("Aucune solution");
 			arrayPoint = old_arrayPoint;
 		}
 		
@@ -172,26 +170,27 @@ public class Plateau {
 		}
 	}
 	
+	/** Methode recursive de resolution */
 	private ArrayList<Point> resolutionAux(ArrayList<Shape> arrayShapeAux) {
 		if (checkWin()) {
 			return new ArrayList<Point>();
 		}
 		
 		ArrayList<Point> arrayPoint = null;
-		for (Shape tmp : getListShape()) {
+		for (Shape shape : getListShape()) {
 			
-			if (!arrayShapeAux.contains(tmp)) {
-				for (Point point : getAllMove(tmp)) {
-					tmp.setLocation(point);
+			if (!arrayShapeAux.contains(shape)) {
+				for (Point point : getAllMove(shape)) {
+					shape.setLocation(point);
 					
-					placeShape(tmp);
-					arrayShapeAux.add(tmp);
+					placeShape(shape);
+					arrayShapeAux.add(shape);
 					arrayPoint = resolutionAux(arrayShapeAux);
-					arrayShapeAux.remove(tmp);
-					removeShape(tmp);
+					arrayShapeAux.remove(shape);
+					removeShape(shape);
 					
 					if (arrayPoint != null) {
-						arrayPoint.add(0, tmp.getPoint());
+						arrayPoint.add(0, shape.getPoint());
 						return arrayPoint;
 					}
 				}
@@ -201,16 +200,4 @@ public class Plateau {
 		
 		return null;
 	}
-	
-	public void imprime() {
-		String s = "";
-		for (int i = 0; i < getHeight(); i++) {
-			for (int j = 0; j < getWidth(); j++) {
-				s += getBlock(i, j) + " ";
-			}
-			s += "\n";
-		}
-		System.out.println(s);
-	}
-	
 }

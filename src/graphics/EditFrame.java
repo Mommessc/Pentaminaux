@@ -164,5 +164,4 @@ public class EditFrame extends Observable {
 			});
 		}
 	}
-	
 }

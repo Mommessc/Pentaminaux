@@ -25,44 +25,54 @@ public class Shape extends Observable {
 		this(new Point(line, column), array, color);
 	}
 	
+	/** Retourne la position */
 	public final Point getPoint() {
 		return point;
 	}
 	
+	/** Retourne la position X */
 	public int getLine() {
 		return (int) point.getX();
 	}
 	
+	/** Retourne la position Y */
 	public int getColumn() {
 		return (int) point.getY();
 	}
 	
+	/** Retourne la largeur */
 	public int getWidth() {
 		return (int) dimension.getWidth();
 	}
 	
+	/** Retourne la hauteur */
 	public int getHeight() {
 		return (int) dimension.getHeight();
 	}
 	
+	/** Retourne la couleur */
 	public final Color getColor() {
 		return color;
 	}
 	
+	/** Retourne vrai si la case (i, j) est occupee */
 	public boolean busyCase(int i, int j) {
 		return array[i][j] != 0;
 	}
 	
+	/** Place la shape sur la case (i, j) */
 	public void setLocation(int i, int j) {
 		point.setLocation(i, j);
 		setChanged();
 		notifyObservers();
 	}
 	
+	/** Place la shape sur la position donnee par le point */
 	public void setLocation(Point point) {
 		setLocation((int) point.getX(), (int) point.getY());
 	}
 	
+	/** Translate la position */
 	public void tranlsate(int ti, int tj) {
 		setLocation((int) point.getX() + ti, (int) point.getY() + tj);
 	}
