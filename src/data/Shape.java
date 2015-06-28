@@ -64,15 +64,13 @@ public class Shape extends Observable {
 	}
 	
 	public void tranlsate(int ti, int tj) {
-		point.translate(ti, tj);
-		setChanged();
-		notifyObservers();
+		setLocation((int) point.getX() + ti, (int) point.getY() + tj);
 	}
 	
 	public String toString() {
 		String s = "";
-		for (int j=0; j<array.length; j++) {
-			for (int i=0; i<array[j].length; i++) {
+		for (int j = 0; j < array.length; j++) {
+			for (int i = 0; i < array[j].length; i++) {
 				s += array[j][i] + " ";
 			}
 			s += "\n";

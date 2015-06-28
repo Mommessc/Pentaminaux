@@ -3,28 +3,35 @@ package graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Observable;
-import java.util.Observer;
-
 import javax.swing.JComponent;
 
 import data.Plateau;
 import data.Shape;
 
-public class BoardFrame extends JComponent implements Observer {
+public class BoardFrame extends JComponent {
 	
 	private static final long serialVersionUID = 1L;
 	private int boardWidth, boardHeight;
 	
-	public BoardFrame(int pWidth, int pHeight) {
+	/** Constructeur */
+	public BoardFrame(int width, int height) {
 		super();
-		this.boardWidth = pWidth - 8;
-		this.boardHeight = pHeight - 8;
+		this.boardWidth = width - 8;
+		this.boardHeight = height - 8;
 		
 		setLayout(null);
-		setPreferredSize(new Dimension(pWidth*30, pHeight*30));
+		setPreferredSize(new Dimension(width*30, height*30));
 	}
 	
+	/** Ajoute une shape au plateau graphique */
+	public void addShape(Plateau p, Shape shape) {
+		SpriteShape sp = new SpriteShape(p, shape);
+		shape.addObserver(sp);
+		add(sp);
+		repaint();
+	}
+	
+	/** Dessine le plateau */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.fillRect(0, 0, getWidth(), getHeight());
@@ -32,13 +39,4 @@ public class BoardFrame extends JComponent implements Observer {
 		g.setColor(Color.darkGray);
 		g.fillRect(120, 120, boardWidth*30, boardHeight*30);
 	}
-	
-	@Override
-	public void update(Observable observable, Object object) {
-		Plateau p = (Plateau) observable;
-		Shape shape = (Shape) object;
-		add(new SpriteShape(p, shape));
-		repaint();
-	}
-	
 }

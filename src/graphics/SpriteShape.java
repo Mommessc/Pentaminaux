@@ -21,11 +21,11 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	private int lineMouse, columnMouse;
 	private int lineClickedMouse, columnClickedMouse;
 	
+	/** Constructeur */
 	public SpriteShape(Plateau p, Shape shape) {
 		super();
 		this.p = p;
 		this.shape = shape;
-		this.shape.addObserver(this);
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -34,12 +34,18 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 		setSize(shape.getWidth()*30, shape.getHeight()*30);
 	}
 	
+	@Override
+	public void update(Observable o, Object object) {
+		setLocation(shape.getColumn()*30, shape.getLine()*30);
+	}
+	
+	/** Dessine la shape */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		g.setColor(shape.getColor());
-		for (int j=0; j<shape.getWidth(); j++) {
-			for (int i=0; i<shape.getHeight(); i++) {
+		for (int i = 0; i < shape.getHeight(); i++) {
+			for (int j = 0; j < shape.getWidth(); j++) {
 				if (shape.busyCase(i, j)) {
 					g.fillRect(j*30+1, i*30+1, 28, 28);
 				}
@@ -47,25 +53,22 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 		}
 		
 	}
-
+	
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseClicked(MouseEvent ev) {
 		
 	}
-
+	
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseEntered(MouseEvent ev) {
 		
 	}
-
+	
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseExited(MouseEvent ev) {
 		
 	}
-
+	
 	@Override
 	public void mousePressed(MouseEvent ev) {
 		lineClickedMouse = (getY() + ev.getY()) / 30;
@@ -73,8 +76,7 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	}
 	
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseReleased(MouseEvent ev) {
 		
 	}
 	
@@ -86,12 +88,11 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 		if (lineMouse != lineClickedMouse || columnMouse != columnClickedMouse) {
 			p.removeShape(shape);
 			shape.tranlsate(lineMouse-lineClickedMouse, columnMouse-columnClickedMouse);
-			p.placeShape(shape);
-			if (!p.checkShape(shape)) {
-				p.removeShape(shape);
+			if (!p.isValidLocation(shape)) {
 				shape.tranlsate(lineClickedMouse-lineMouse, columnClickedMouse-columnMouse);
 				p.placeShape(shape);
 			} else {
+				p.placeShape(shape);
 				lineClickedMouse = lineMouse;
 				columnClickedMouse = columnMouse;
 			}
@@ -99,14 +100,7 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	}
 	
 	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseMoved(MouseEvent ev) {
 		
 	}
-	
-	@Override
-	public void update(Observable o, Object object) {
-		setLocation(shape.getColumn()*30, shape.getLine()*30);
-	}
-	
 }
