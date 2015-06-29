@@ -18,14 +18,14 @@ import javax.swing.SwingUtilities;
 import data.Plateau;
 import data.Shape;
 
-public class GameFrame implements Observer {
+public class MainWindow implements Observer {
 	
 	private JFrame frame, frameEdit;
 	private BoardFrame boardframe;
 	private Plateau p;
 	
 	/** Constructeur */
-	public GameFrame(JFrame frame, Plateau p) {
+	public MainWindow(JFrame frame, Plateau p) {
 		this.frame = frame;
 		this.frame.setTitle("Puzzle Game");
 		this.frame.setJMenuBar(new Menu());
@@ -154,7 +154,7 @@ public class GameFrame implements Observer {
 			@Override
 			public void run() {
 				final JFrame fen = new JFrame();
-				final GameFrame gameFen = new GameFrame(fen, p);
+				final MainWindow gameFen = new MainWindow(fen, p);
 				fen.addKeyListener(new KeyListener() {
 					public void keyTyped(KeyEvent ev) {}
 					

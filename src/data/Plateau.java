@@ -136,7 +136,7 @@ public class Plateau {
 	/** Retourne toutes les positions possibles d'une shape sur le plateau */
 	private final ArrayList<Point> getAllMove(Shape shape) {
 		ArrayList<Point> arrayPoint = new ArrayList<Point>();
-		Point point = shape.getPoint();
+		Point point = (Point) shape.getPoint().clone();
 		
 		for (int i = 4; i < getHeight()-3-shape.getHeight(); i++) {
 			for (int j = 4; j < getWidth()-3-shape.getWidth(); j++) {
@@ -184,9 +184,11 @@ public class Plateau {
 					shape.setLocation(point);
 					
 					placeShape(shape);
-					arrayShapeAux.add(shape);
-					arrayPoint = resolutionAux(arrayShapeAux);
-					arrayShapeAux.remove(shape);
+					if (positionPossible(arrayShapeAux)) {
+						arrayShapeAux.add(shape);
+						arrayPoint = resolutionAux(arrayShapeAux);
+						arrayShapeAux.remove(shape);
+					}
 					removeShape(shape);
 					
 					if (arrayPoint != null) {
@@ -199,5 +201,48 @@ public class Plateau {
 		}
 		
 		return null;
+	}
+	
+	private boolean positionPossible(ArrayList<Shape> arrayShapeAux) {
+		Point old_point;
+		
+		// Copie du plateau
+		Plateau tmp = new Plateau(getWidth()-8, getHeight()-8);
+		for (int i = 0; i < tmp.getHeight()-8; i++) {
+			for (int j = 0; j < tmp.getWidth()-8; j++) {
+				tmp.setBlock(i+4, j+4, getBlock(i+4, j+4));
+			}
+		}
+		
+		ArrayList<ArrayList<Point>> listPoints = new ArrayList<ArrayList<Point>>(0);
+		for (Shape shape : getListShape()) {
+			if (!arrayShapeAux.contains(shape)) {
+				listPoints.add(tmp.getAllMove(shape));
+			} else {
+				listPoints.add(null);
+			}
+		}
+		
+		for (Shape shape : getListShape()) {
+			if (!arrayShapeAux.contains(shape)) {
+				old_point = (Point) shape.getPoint().clone();
+				for (Point point : listPoints.get(getListShape().indexOf(shape))) {
+					shape.setLocation(point);
+					tmp.placeShape(shape);
+				}
+				shape.setLocation(old_point);
+			}
+		}
+		
+		boolean possible = true;
+		for (int i = 0; i < tmp.getHeight()-8 && possible; i++) {
+			for (int j = 0; j < tmp.getWidth()-8 && possible; j++) {
+				if (tmp.getBlock(i+4, j+4) == 0) {
+					possible = false;
+				}
+			}
+		}
+		
+		return possible;
 	}
 }
