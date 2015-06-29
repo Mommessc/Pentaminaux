@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -19,6 +20,9 @@ import data.Plateau;
 import data.Shape;
 
 public class MainWindow implements Observer {
+	
+	public static int HAUTEUR = 4;
+	public static int LARGEUR = 3;
 	
 	private JFrame frame, frameEdit;
 	private BoardFrame boardframe;
@@ -104,12 +108,25 @@ public class MainWindow implements Observer {
 					Thread t = new Thread(new Runnable() {
 						@Override
 						public void run() {
+							long time = System.currentTimeMillis();
 							p.resolution();
+							long millis = System.currentTimeMillis() - time;
 							if (!p.checkWin()) {
 								JOptionPane.showMessageDialog(frame,
-									    "Aucune solution trouvée",
+									    "Aucune solution trouvee",
 									    "Resultat",
 									    JOptionPane.WARNING_MESSAGE);
+							} else {
+								String str = String.format("%02dh %02dm %02ds", 
+										TimeUnit.MILLISECONDS.toHours(millis),
+										TimeUnit.MILLISECONDS.toMinutes(millis) -  
+										TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+										TimeUnit.MILLISECONDS.toSeconds(millis) - 
+										TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));   
+								JOptionPane.showMessageDialog(frame,
+									    "Solution trouvee en " + str,
+									    "Resultat",
+									    JOptionPane.DEFAULT_OPTION);
 							}
 						}
 					});
@@ -148,7 +165,7 @@ public class MainWindow implements Observer {
 	/** Lancement de l'application */
 	public static void main(String[] args) {
 		
-		final Plateau p = new Plateau(4, 3);
+		final Plateau p = new Plateau(LARGEUR, HAUTEUR);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
