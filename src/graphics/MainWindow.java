@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
@@ -16,11 +17,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import application.Deserialization;
+import application.Serialisation;
 import data.Plateau;
 import data.Shape;
 
 public class MainWindow implements Observer {
 	
+	private static String FILENAME = "test";
 	public static int HAUTEUR = 4;
 	public static int LARGEUR = 3;
 	
@@ -46,7 +50,7 @@ public class MainWindow implements Observer {
 		JPanel panneau = new JPanel();
 		panneau.add(boardframe);
 		this.frame.setContentPane(panneau);
-		
+				
 		this.frame.pack();
 		this.frame.setLocationRelativeTo(null);
 	}
@@ -72,6 +76,12 @@ public class MainWindow implements Observer {
 					trouve = true;
 				}
 			}
+		}
+	}
+	
+	public void updateShape() {
+		for (Shape shape : p.getListShape()) {
+			boardframe.addShape(p, shape);
 		}
 	}
 	
@@ -137,6 +147,8 @@ public class MainWindow implements Observer {
 			end.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
+					Serialisation s = new Serialisation(FILENAME);
+					s.write(p);
 					dispose();
 					System.exit(0);
 				}
@@ -165,13 +177,22 @@ public class MainWindow implements Observer {
 	/** Lancement de l'application */
 	public static void main(String[] args) {
 		
-		final Plateau p = new Plateau(LARGEUR, HAUTEUR);
+		final Plateau p;
+		
+		File fichier = new File(FILENAME);		
+		if (fichier.exists()) {
+			Deserialization d = new Deserialization(FILENAME);
+			p = (Plateau) d.read();
+		} else {
+			p = new Plateau(LARGEUR, HAUTEUR);
+		}
+		
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				final JFrame fen = new JFrame();
-				final MainWindow gameFen = new MainWindow(fen, p);
+				final MainWindow mainWindow = new MainWindow(fen, p);
 				fen.addKeyListener(new KeyListener() {
 					public void keyTyped(KeyEvent ev) {}
 					
@@ -179,11 +200,12 @@ public class MainWindow implements Observer {
 					
 					public void keyPressed(KeyEvent ev) {
 						if (ev.getKeyCode() == KeyEvent.VK_ESCAPE) {
-							gameFen.dispose();
+							mainWindow.dispose();
 							System.exit(0);
 						}
 					}
 				});
+				mainWindow.updateShape();
 				fen.setVisible(true);
 			}
 		});

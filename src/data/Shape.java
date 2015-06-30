@@ -3,10 +3,12 @@ package data;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.Observable;
 
-public class Shape extends Observable {
+public class Shape extends Observable implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	Point point;
 	Dimension dimension;
 	private int[][] array;

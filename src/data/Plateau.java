@@ -1,10 +1,12 @@
 package data;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Plateau {
+public class Plateau implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	private int width, height;
 	private int[][] array;
 	private ArrayList<Shape> arrayShape;
