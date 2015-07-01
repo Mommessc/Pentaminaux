@@ -3,6 +3,8 @@ package data;
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Plateau implements Serializable {
 	
@@ -155,6 +157,18 @@ public class Plateau implements Serializable {
 	
 	/** Resout le casse tete */
 	public void resolution() {
+		
+		Comparator<Shape> c = new Comparator<Shape>() {
+			@Override
+			public int compare(Shape shape1, Shape shape2) {
+				int surface1 = shape1.getWidth() * shape1.getHeight();
+				int surface2 = shape2.getWidth() * shape2.getHeight();
+				return (surface2 - surface1);
+			}
+			
+		};
+		Collections.sort(getListShape(), c);
+		
 		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
 		for (Shape shape : getListShape()) {
 			old_arrayPoint.add((Point) shape.getPoint().clone());

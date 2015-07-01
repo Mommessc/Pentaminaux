@@ -25,8 +25,8 @@ import data.Shape;
 public class MainWindow implements Observer {
 	
 	private static String FILENAME = "test";
-	public static int HAUTEUR = 4;
-	public static int LARGEUR = 3;
+	public static int HAUTEUR = 6;
+	public static int LARGEUR = 6;
 	
 	private JFrame frame, frameEdit;
 	private BoardFrame boardframe;
