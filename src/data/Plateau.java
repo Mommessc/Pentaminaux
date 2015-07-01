@@ -12,6 +12,7 @@ public class Plateau implements Serializable {
 	private int width, height;
 	private int[][] array;
 	private ArrayList<Shape> arrayShape;
+	boolean lock;
 	
 	/** Constructeur */
 	public Plateau(int width, int height) {
@@ -26,6 +27,7 @@ public class Plateau implements Serializable {
 			}
 		}
 		this.arrayShape = new ArrayList<Shape>();
+		this.lock = false;
 	}
 	
 	/** Retourne la largeur du plateau */
@@ -63,6 +65,11 @@ public class Plateau implements Serializable {
 			}
 		}
 		return true;
+	}
+	
+	/** Retourne vrai si le plateau est bloque */
+	public boolean isLocked() {
+		return lock;
 	}
 	
 	/** Retourne le contenu de la case (i, j) */
@@ -157,6 +164,7 @@ public class Plateau implements Serializable {
 	
 	/** Resout le casse tete */
 	public void resolution() {
+		lock = true;
 		
 		Comparator<Shape> c = new Comparator<Shape>() {
 			@Override
@@ -184,6 +192,8 @@ public class Plateau implements Serializable {
 			shape.setLocation(arrayPoint.get(getListShape().indexOf(shape)));
 			placeShape(shape);
 		}
+		
+		lock = false;
 	}
 	
 	/** Methode recursive de resolution */
