@@ -36,6 +36,9 @@ public class MainWindow implements Observer {
 		editFrame.addObserver(this);
 		
 		this.boardGame = new BoardGame(p.getWidth(), p.getHeight());
+		for (Shape shape : p.getListShape()) {
+			boardGame.addShape(p, shape);
+		}
 		
 		JPanel panneau = new JPanel();
 		panneau.add(boardGame);
@@ -68,12 +71,6 @@ public class MainWindow implements Observer {
 					trouve = true;
 				}
 			}
-		}
-	}
-	
-	public void updateShape() {
-		for (Shape shape : p.getListShape()) {
-			boardGame.addShape(p, shape);
 		}
 	}
 	

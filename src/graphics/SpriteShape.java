@@ -82,6 +82,10 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	
 	@Override
 	public void mouseDragged(MouseEvent ev) {
+		if (p.isLocked()) {
+			return;
+		}
+		
 		lineMouse = (getY() + ev.getY()) / 30;
 		columnMouse = (getX() + ev.getX()) / 30;
 		
