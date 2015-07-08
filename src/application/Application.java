@@ -12,17 +12,17 @@ import javax.swing.SwingUtilities;
 import data.Plateau;
 
 public class Application {
-
+	
 	private static String FILENAME = "test";
-	public static int HAUTEUR = 4;
-	public static int LARGEUR = 5;
+	public static int HAUTEUR = 7;
+	public static int LARGEUR = 8;
 	
 	/** Lancement de l'application */
 	public static void main(String[] args) {
 		
 		final Plateau p;
 		
-		final String filename = FILENAME + "_" + HAUTEUR + LARGEUR;
+		final String filename = "save/" + FILENAME + "_" + HAUTEUR + LARGEUR;
 		File fichier = new File(filename);
 		if (fichier.exists()) {
 			Deserialization d = new Deserialization(filename);
