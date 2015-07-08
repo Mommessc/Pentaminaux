@@ -15,16 +15,16 @@ public class Shape extends Observable implements Serializable {
 	private Color color;
 	
 	/** Constructeur */
-	public Shape(Point point, int[][] array, Color color) {
-		this.point = point;
+	public Shape(int line, int column, int[][] array, Color color) {
+		this.point = new Point(line, column);
 		this.dimension = new Dimension(array[0].length, array.length);
 		this.array = array;
 		this.color = color;
 	}
 	
 	/** Constructeur */
-	public Shape(int line, int column, int[][] array, Color color) {
-		this(new Point(line, column), array, color);
+	public Shape(Point point, int[][] array, Color color) {
+		this((int) point.getX(), (int) point.getY(), array, color);
 	}
 	
 	/** Retourne la position */
@@ -62,9 +62,9 @@ public class Shape extends Observable implements Serializable {
 		return array[i][j] != 0;
 	}
 	
-	/** Place la shape sur la case (i, j) */
-	public void setLocation(int i, int j) {
-		point.setLocation(i, j);
+	/** Place la shape en position (line, column) */
+	public void setLocation(int line, int column) {
+		point.setLocation(line, column);
 		setChanged();
 		notifyObservers();
 	}
@@ -72,11 +72,6 @@ public class Shape extends Observable implements Serializable {
 	/** Place la shape sur la position donnee par le point */
 	public void setLocation(Point point) {
 		setLocation((int) point.getX(), (int) point.getY());
-	}
-	
-	/** Translate la position */
-	public void tranlsate(int ti, int tj) {
-		setLocation((int) point.getX() + ti, (int) point.getY() + tj);
 	}
 	
 	public String toString() {

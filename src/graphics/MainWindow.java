@@ -2,9 +2,6 @@ package graphics;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
@@ -15,25 +12,19 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import application.Deserialization;
 import application.Serialisation;
 import data.Plateau;
 import data.Shape;
 
 public class MainWindow implements Observer {
 	
-	private static String FILENAME = "test";
-	public static int HAUTEUR = 9;
-	public static int LARGEUR = 4;
-	
 	private JFrame frame, frameEdit;
-	private BoardFrame boardframe;
+	private BoardGame boardGame;
 	private Plateau p;
+	private String filename;
 	
 	/** Constructeur */
-	public MainWindow(JFrame frame, Plateau p) {
+	public MainWindow(JFrame frame, Plateau p, String filename) {
 		this.frame = frame;
 		this.frame.setTitle("Puzzle Game");
 		this.frame.setJMenuBar(new Menu());
@@ -44,13 +35,15 @@ public class MainWindow implements Observer {
 		EditFrame editFrame = new EditFrame(frameEdit, p);
 		editFrame.addObserver(this);
 		
-		this.boardframe = new BoardFrame(p.getWidth(), p.getHeight());
-		this.p = p;
+		this.boardGame = new BoardGame(p.getWidth(), p.getHeight());
 		
 		JPanel panneau = new JPanel();
-		panneau.add(boardframe);
+		panneau.add(boardGame);
 		this.frame.setContentPane(panneau);
-				
+		
+		this.p = p;
+		this.filename = filename;
+		
 		this.frame.pack();
 		this.frame.setLocationRelativeTo(null);
 	}
@@ -69,10 +62,9 @@ public class MainWindow implements Observer {
 		int w = p.getWidth() - shape.getWidth() + 1;
 		for (int i = 0; i < h && !trouve; i++) {
 			for (int j = 0; j < w && !trouve; j++) {
-				shape.setLocation(i, j);
-				if (p.isValidLocation(shape)) {
-					p.addShapeList(shape);
-					boardframe.addShape(p, shape);
+				if (p.isValidLocation(shape, i, j)) {
+					p.addShape(shape, i, j);
+					boardGame.addShape(p, shape);
 					trouve = true;
 				}
 			}
@@ -81,8 +73,17 @@ public class MainWindow implements Observer {
 	
 	public void updateShape() {
 		for (Shape shape : p.getListShape()) {
-			boardframe.addShape(p, shape);
+			boardGame.addShape(p, shape);
 		}
+	}
+	
+	public void close(String filename) {
+		if (filename != null) {
+			Serialisation s = new Serialisation(filename);
+			s.write(p);
+		}
+		dispose();
+		System.exit(0);
 	}
 	
 	/** Classe privee */
@@ -147,10 +148,7 @@ public class MainWindow implements Observer {
 			end.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					Serialisation s = new Serialisation(FILENAME);
-					s.write(p);
-					dispose();
-					System.exit(0);
+					close(filename);
 				}
 			});
 			
@@ -166,48 +164,12 @@ public class MainWindow implements Observer {
 			clear.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					p.removeShapeList();
-					boardframe.removeAll();
-					boardframe.repaint();
+					p.removeShapes();
+					boardGame.removeAll();
+					boardGame.repaint();
 				}
 			});
 		}
 	}
 	
-	/** Lancement de l'application */
-	public static void main(String[] args) {
-		
-		final Plateau p;
-		
-		File fichier = new File(FILENAME);		
-		if (fichier.exists()) {
-			Deserialization d = new Deserialization(FILENAME);
-			p = (Plateau) d.read();
-		} else {
-			p = new Plateau(LARGEUR, HAUTEUR);
-		}
-		
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				final JFrame fen = new JFrame();
-				final MainWindow mainWindow = new MainWindow(fen, p);
-				fen.addKeyListener(new KeyListener() {
-					public void keyTyped(KeyEvent ev) {}
-					
-					public void keyReleased(KeyEvent ev) {}
-					
-					public void keyPressed(KeyEvent ev) {
-						if (ev.getKeyCode() == KeyEvent.VK_ESCAPE) {
-							mainWindow.dispose();
-							System.exit(0);
-						}
-					}
-				});
-				mainWindow.updateShape();
-				fen.setVisible(true);
-			}
-		});
-	}
 }

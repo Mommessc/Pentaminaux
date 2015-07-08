@@ -1,5 +1,0 @@
-
-
-Prendre en compte la supression d'un element
-
-Sauvegarder l'etat d'un plateau

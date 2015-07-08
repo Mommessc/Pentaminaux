@@ -86,16 +86,15 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 		columnMouse = (getX() + ev.getX()) / 30;
 		
 		if (lineMouse != lineClickedMouse || columnMouse != columnClickedMouse) {
-			p.removeShape(shape);
-			shape.tranlsate(lineMouse-lineClickedMouse, columnMouse-columnClickedMouse);
-			if (!p.isValidLocation(shape)) {
-				shape.tranlsate(lineClickedMouse-lineMouse, columnClickedMouse-columnMouse);
-				p.placeShape(shape);
-			} else {
-				p.placeShape(shape);
+			p.popShape(shape);
+			int i = shape.getLine() + (lineMouse - lineClickedMouse);
+			int j = shape.getColumn() + (columnMouse - columnClickedMouse);
+			if (p.isValidLocation(shape, i, j)) {
+				shape.setLocation(i, j);
 				lineClickedMouse = lineMouse;
 				columnClickedMouse = columnMouse;
 			}
+			p.putShape(shape);
 		}
 	}
 	
