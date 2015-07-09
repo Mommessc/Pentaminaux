@@ -87,7 +87,7 @@ public class Plateau implements Serializable {
 		return true;
 	}
 	
-	/** Retourne vrai si l'etat du plateau est admissible */
+	/** Retourne vrai si l'etat du plateau est admissible, toutes les shapes en dessous de id sont fixees */
 	private boolean positionPossible(int id) {
 		Point old_point;
 		

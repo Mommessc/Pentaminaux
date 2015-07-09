@@ -1,13 +1,16 @@
 package graphics;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import data.Plateau;
 import data.Shape;
@@ -21,11 +24,16 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	private int lineMouse, columnMouse;
 	private int lineClickedMouse, columnClickedMouse;
 	
+	private Motion motion;
+	
 	/** Constructeur */
 	public SpriteShape(Plateau p, Shape shape) {
 		super();
 		this.p = p;
 		this.shape = shape;
+		
+		this.motion = new Motion();
+		motion.start();
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -36,7 +44,14 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	
 	@Override
 	public void update(Observable o, Object object) {
-		setLocation(shape.getColumn()*30, shape.getLine()*30);
+		motion.moveTo(shape.getLine(), shape.getColumn());
+		if (motion.isWaiting()) {
+			synchronized(motion) {
+				motion.notify();
+			}
+		}
+		
+//		setLocation(shape.getColumn()*30, shape.getLine()*30);
 	}
 	
 	/** Dessine la shape */
@@ -56,7 +71,9 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	
 	@Override
 	public void mouseClicked(MouseEvent ev) {
-		
+		p.popShape(shape);
+		shape.setLocation(4, 4);
+		p.putShape(shape);
 	}
 	
 	@Override
@@ -106,4 +123,75 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	public void mouseMoved(MouseEvent ev) {
 		
 	}
+	
+	/** Thread prive */
+	private class Motion extends Thread {
+		
+		private int line, column, realLine, realColumn;
+		private boolean wait;
+		
+		/** Constructeur */
+		public Motion() {
+			this.line = shape.getLine();
+			this.column = shape.getColumn();
+			this.realLine = shape.getLine() * 30;
+			this.realColumn = shape.getColumn() * 30;
+			this.wait = true;
+		}
+		
+		public boolean isWaiting() {
+			return wait;
+		}
+		
+		public void moveTo(int line, int column) {
+			this.line = line;
+			this.column = column;
+		}
+		
+		private boolean isMoving() {
+			return ((line * 30 != realLine) || (column * 30 != realColumn));
+		}
+		
+		@Override
+		public void run() {
+			
+			synchronized(this) {
+				while (true) {
+					
+					try {
+						wait = true;
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					wait = false;
+					
+					while (isMoving()) {
+						
+						if (line * 30 < realLine) {
+							realLine--;
+						} else if (line * 30 > realLine) {
+							realLine++;
+						}
+						
+						if (column * 30 < realColumn) {
+							realColumn--;
+						} else if (column * 30 > realColumn) {
+							realColumn++;
+						}
+						
+						setLocation(realColumn, realLine);
+						
+						try {
+							Thread.sleep(2);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	
 }

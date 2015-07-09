@@ -14,8 +14,8 @@ import data.Plateau;
 public class Application {
 	
 	private static String FILENAME = "test";
-	public static int HAUTEUR = 7;
-	public static int LARGEUR = 8;
+	public static int HAUTEUR = 4;
+	public static int LARGEUR = 4;
 	
 	/** Lancement de l'application */
 	public static void main(String[] args) {
