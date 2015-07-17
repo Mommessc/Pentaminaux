@@ -13,13 +13,13 @@ import data.Plateau;
 public class Application {
 	
 	public static String FILENAME = "test";
-	public static int HAUTEUR = 8;
-	public static int LARGEUR = 7;
+	public static int HAUTEUR = 15;
+	public static int LARGEUR = 15;
 	
 	/** Lancement de l'application */
 	public static void main(String[] args) {
 		
-		final Plateau p;// = new Plateau(LARGEUR, HAUTEUR);
+		final Plateau p;
 		
 		final String filename = "save/" + FILENAME + "_" + HAUTEUR + "x" + LARGEUR;
 		File fichier = new File(filename);

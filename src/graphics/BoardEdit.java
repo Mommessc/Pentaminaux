@@ -5,17 +5,19 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JComponent;
 
 import data.Shape;
 
-public class BoardEdit extends JComponent implements MouseListener {
+public class BoardEdit extends JComponent implements MouseListener, MouseMotionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private int width, height;
 	private int[][] array;
 	private Color color;
+	private int line, column;
 	
 	/** Constucteur */
 	public BoardEdit(int pWidth, int pHeight) {
@@ -30,6 +32,7 @@ public class BoardEdit extends JComponent implements MouseListener {
 		this.color = Color.red;
 		
 		addMouseListener(this);
+		addMouseMotionListener(this);
 		
 		setLayout(null);
 		setPreferredSize(new Dimension((width+2)*30, (height+2)*30));
@@ -164,8 +167,8 @@ public class BoardEdit extends JComponent implements MouseListener {
 	
 	@Override
 	public void mousePressed(MouseEvent ev) {
-		int line = ev.getY() / 30;
-		int column = ev.getX() / 30;
+		line = ev.getY() / 30;
+		column = ev.getX() / 30;
 		if (line >= 1 && column >= 1 && line <= this.height && column <= this.width) {
 			if (array[line-1][column-1] == 1) {
 				array[line-1][column-1] = 0;
@@ -178,6 +181,30 @@ public class BoardEdit extends JComponent implements MouseListener {
 	
 	@Override
 	public void mouseReleased(MouseEvent ev) {
+		
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent ev) {
+		int line2 = ev.getY() / 30;
+		int column2 = ev.getX() / 30;
+		
+		if (line != line2 || column != column2) {
+			line = line2;
+			column = column2;
+			if (line >= 1 && column >= 1 && line <= this.height && column <= this.width) {
+				if (array[line-1][column-1] == 1) {
+					array[line-1][column-1] = 0;
+				} else {
+					array[line-1][column-1] = 1;
+				}
+			}
+			repaint();
+		}
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent ev) {
 		
 	}
 }
