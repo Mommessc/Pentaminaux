@@ -41,14 +41,16 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	
 	@Override
 	public void update(Observable o, Object object) {
-		motion.moveTo(shape.getLine(), shape.getColumn());
-		if (motion.isWaiting()) {
-			synchronized(motion) {
-				motion.notify();
+		if (!p.isLocked()) {
+			motion.moveTo(shape.getLine(), shape.getColumn());
+			if (motion.isWaiting()) {
+				synchronized(motion) {
+					motion.notify();
+				}
 			}
+		} else {
+			setLocation(shape.getColumn()*30, shape.getLine()*30);
 		}
-//		
-//		setLocation(shape.getColumn()*30, shape.getLine()*30);
 	}
 	
 	/** Dessine la shape */

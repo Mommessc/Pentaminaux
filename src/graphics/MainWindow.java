@@ -81,7 +81,7 @@ public class MainWindow implements Observer {
 		
 		private static final long serialVersionUID = 1L;
 		JMenu fichier, edit;
-		JMenuItem clear, save, end, soluce, newShape;
+		JMenuItem clear, save, end, newShape, soluce;
 		
 		/** Constructeur */
 		public Menu() {
@@ -95,11 +95,11 @@ public class MainWindow implements Observer {
 			fichier.add(save);
 			fichier.add(end);
 			
-			soluce = new JMenuItem("Resolution");
 			newShape = new JMenuItem("Nouvelle forme");
+			soluce = new JMenuItem("Resolution");
 			edit = new JMenu("Edit");
-			edit.add(soluce);
 			edit.add(newShape);
+			edit.add(soluce);
 			
 			// Ajout des menus
 			this.add(fichier);
@@ -127,6 +127,15 @@ public class MainWindow implements Observer {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					close();
+				}
+			});
+			
+			newShape.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					if (!frameEdit.getFrame().isVisible()) {
+						frameEdit.getFrame().setVisible(true);
+					}
 				}
 			});
 			
@@ -159,15 +168,6 @@ public class MainWindow implements Observer {
 						}
 					});
 					t.start();
-				}
-			});
-			
-			newShape.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					if (!frameEdit.getFrame().isVisible()) {
-						frameEdit.getFrame().setVisible(true);
-					}
 				}
 			});
 			
