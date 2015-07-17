@@ -16,24 +16,31 @@ import data.Plateau;
 
 public class EditFrame extends Observable {
 	
-	private JFrame frameEdit;
+	private JFrame frame;
 	private BoardEdit boardsetting;
 	
 	/** Constucteur */
-	public EditFrame(JFrame frameEdit, Plateau p) {
-		this.frameEdit = frameEdit;
-		this.frameEdit.setTitle("Editor");
-		this.frameEdit.setJMenuBar(new Menu());
-		this.frameEdit.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.frameEdit.setResizable(false);
+	public EditFrame(Plateau p) {
+		this.frame = new JFrame("Editor");
+		this.frame.setJMenuBar(new Menu());
+		this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.frame.setResizable(false);
 		
 		boardsetting = new BoardEdit(p.getWidth(), p.getHeight());
 		
 		JPanel panneau = new JPanel();
 		panneau.add(boardsetting);
-		frameEdit.setContentPane(panneau);
+		this.frame.setContentPane(panneau);
 		
-		this.frameEdit.pack();
+		this.frame.pack();
+	}
+	
+	public JFrame getFrame() {
+		return frame;
+	}
+	
+	public void close() {
+		frame.dispose();
 	}
 	
 	/** Classe privee */
@@ -100,14 +107,14 @@ public class EditFrame extends Observable {
 			close.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					frameEdit.dispose();
+					frame.dispose();
 				}
 			});
 			
 			personal.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					Color color = JColorChooser.showDialog(frameEdit, "Choisir une couleur", Color.red);
+					Color color = JColorChooser.showDialog(frame, "Choisir une couleur", Color.red);
 					if (color != null) {
 						boardsetting.setColor(color);	
 					}

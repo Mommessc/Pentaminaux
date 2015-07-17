@@ -3,32 +3,48 @@ package graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.swing.JComponent;
 
 import data.Plateau;
 import data.Shape;
 
-public class BoardGame extends JComponent {
+public class BoardGame extends JComponent implements Observer {
 	
 	private static final long serialVersionUID = 1L;
 	private int boardWidth, boardHeight;
 	
 	/** Constructeur */
-	public BoardGame(int width, int height) {
+	public BoardGame(Plateau p) {
 		super();
-		this.boardWidth = width - 8;
-		this.boardHeight = height - 8;
+		this.boardWidth = p.getWidth() - 8;
+		this.boardHeight = p.getHeight() - 8;
+		
+		p.addObserver(this);
+		
+		for (Shape shape : p.getListShape()) {
+			addShape(p, shape);
+		}
 		
 		setLayout(null);
-		setPreferredSize(new Dimension(width*30, height*30));
+		setPreferredSize(new Dimension(p.getWidth()*30, p.getHeight()*30));
 	}
 	
-	/** Ajoute une shape au plateau graphique */
+	/** Ajoute une shape sur le board */
 	public void addShape(Plateau p, Shape shape) {
 		SpriteShape sp = new SpriteShape(p, shape);
 		shape.addObserver(sp);
 		add(sp);
 		repaint();
+	}
+	
+	@Override
+	public void update(Observable obs, Object object) {
+		Plateau p = (Plateau) obs; 
+		Shape shape = (Shape) object;
+		addShape(p, shape);
 	}
 	
 	/** Dessine le plateau */

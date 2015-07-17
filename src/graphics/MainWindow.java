@@ -12,49 +12,44 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import application.Application;
 import application.Serialisation;
 import data.Plateau;
 import data.Shape;
 
 public class MainWindow implements Observer {
 	
-	private JFrame frame, frameEdit;
+	private JFrame frame;
 	private BoardGame boardGame;
+	private EditFrame frameEdit;
 	private Plateau p;
-	private String filename;
 	
 	/** Constructeur */
-	public MainWindow(JFrame frame, Plateau p, String filename) {
-		this.frame = frame;
-		this.frame.setTitle("Puzzle Game");
+	public MainWindow(Plateau p) {
+		
+		this.frame = new JFrame("Puzzle Game");
 		this.frame.setJMenuBar(new Menu());
 		this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.frame.setResizable(false);
 		
-		this.frameEdit = new JFrame();
-		EditFrame editFrame = new EditFrame(frameEdit, p);
-		editFrame.addObserver(this);
+		frameEdit = new EditFrame(p);
+		frameEdit.addObserver(this);
 		
-		this.boardGame = new BoardGame(p.getWidth(), p.getHeight());
-		for (Shape shape : p.getListShape()) {
-			boardGame.addShape(p, shape);
-		}
+		this.boardGame = new BoardGame(p);
 		
 		JPanel panneau = new JPanel();
 		panneau.add(boardGame);
 		this.frame.setContentPane(panneau);
 		
 		this.p = p;
-		this.filename = filename;
 		
 		this.frame.pack();
 		this.frame.setLocationRelativeTo(null);
 	}
 	
-	/** Efface les fenetres */
-	public void dispose() {
-		frame.dispose();
-		frameEdit.dispose();
+	public JFrame getFrame() {
+		return frame;
 	}
 	
 	@Override
@@ -67,19 +62,17 @@ public class MainWindow implements Observer {
 			for (int j = 0; j < w && !trouve; j++) {
 				if (p.isValidLocation(shape, i, j)) {
 					p.addShape(shape, i, j);
-					boardGame.addShape(p, shape);
+					//boardGame.addShape(p, shape);
 					trouve = true;
 				}
 			}
 		}
 	}
 	
-	public void close(String filename) {
-		if (filename != null) {
-			Serialisation s = new Serialisation(filename);
-			s.write(p);
-		}
-		dispose();
+	/** Ferme l'application */
+	public void close() {
+		frameEdit.close();
+		frame.dispose();
 		System.exit(0);
 	}
 	
@@ -88,27 +81,54 @@ public class MainWindow implements Observer {
 		
 		private static final long serialVersionUID = 1L;
 		JMenu fichier, edit;
-		JMenuItem soluce, end, newShape, clear;
+		JMenuItem clear, save, end, soluce, newShape;
 		
 		/** Constructeur */
 		public Menu() {
 			super();
 			
-			soluce = new JMenuItem("Resolution");
+			clear = new JMenuItem("Nouveau plateau");
+			save = new JMenuItem("Sauvegarder");
 			end = new JMenuItem("Quitter");
 			fichier = new JMenu("Fichier");
-			fichier.add(soluce);
+			fichier.add(clear);
+			fichier.add(save);
 			fichier.add(end);
 			
+			soluce = new JMenuItem("Resolution");
 			newShape = new JMenuItem("Nouvelle forme");
-			clear = new JMenuItem("Nettoyer");
 			edit = new JMenu("Edit");
+			edit.add(soluce);
 			edit.add(newShape);
-			edit.add(clear);
 			
 			// Ajout des menus
 			this.add(fichier);
 			this.add(edit);
+			
+			clear.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					p.removeShapes();
+					boardGame.removeAll();
+					boardGame.repaint();
+				}
+			});
+			
+			save.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					String filename = "save/" + Application.FILENAME + "_" + Application.HAUTEUR + "x" + Application.LARGEUR;
+					Serialisation s = new Serialisation(filename);
+					s.write(p);
+				}
+			});
+			
+			end.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					close();
+				}
+			});
 			
 			soluce.addActionListener(new ActionListener() {
 				@Override
@@ -142,31 +162,15 @@ public class MainWindow implements Observer {
 				}
 			});
 			
-			end.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					close(filename);
-				}
-			});
-			
 			newShape.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					if (!frameEdit.isVisible()) {
-						frameEdit.setVisible(true);
+					if (!frameEdit.getFrame().isVisible()) {
+						frameEdit.getFrame().setVisible(true);
 					}
 				}
 			});
 			
-			clear.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					p.removeShapes();
-					boardGame.removeAll();
-					boardGame.repaint();
-				}
-			});
 		}
 	}
-	
 }

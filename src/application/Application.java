@@ -1,28 +1,27 @@
 package application;
 
-import graphics.MainWindow;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 
-import javax.swing.JFrame;
+import graphics.MainWindow;
+
 import javax.swing.SwingUtilities;
 
 import data.Plateau;
 
 public class Application {
 	
-	private static String FILENAME = "test";
-	public static int HAUTEUR = 4;
+	public static String FILENAME = "test";
+	public static int HAUTEUR = 5;
 	public static int LARGEUR = 4;
 	
 	/** Lancement de l'application */
 	public static void main(String[] args) {
 		
-		final Plateau p;
+		final Plateau p;// = new Plateau(LARGEUR, HAUTEUR);
 		
-		final String filename = "save/" + FILENAME + "_" + HAUTEUR + LARGEUR;
+		final String filename = "save/" + FILENAME + "_" + HAUTEUR + "x" + LARGEUR;
 		File fichier = new File(filename);
 		if (fichier.exists()) {
 			Deserialization d = new Deserialization(filename);
@@ -31,24 +30,22 @@ public class Application {
 			p = new Plateau(LARGEUR, HAUTEUR);
 		}
 		
-		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				final JFrame fen = new JFrame();
-				final MainWindow mainWindow = new MainWindow(fen, p, filename);
-				fen.addKeyListener(new KeyListener() {
+				final MainWindow fen = new MainWindow(p);
+				fen.getFrame().addKeyListener(new KeyListener() {
 					public void keyTyped(KeyEvent ev) {}
 					
 					public void keyReleased(KeyEvent ev) {}
 					
 					public void keyPressed(KeyEvent ev) {
 						if (ev.getKeyCode() == KeyEvent.VK_ESCAPE) {
-							mainWindow.close(filename);
+							fen.close();
 						}
 					}
 				});
-				fen.setVisible(true);
+				fen.getFrame().setVisible(true);
 			}
 		});
 	}

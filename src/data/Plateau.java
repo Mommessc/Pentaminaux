@@ -5,8 +5,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Observable;
 
-public class Plateau implements Serializable {
+public class Plateau extends Observable implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private int width, height;
@@ -175,6 +176,8 @@ public class Plateau implements Serializable {
 		listShape.add(shape);
 		shape.setLocation(line, column);
 		putShape(shape);
+		setChanged();
+		notifyObservers(shape);
 	}
 	
 	/** Retire toutes les shapes du plateau */

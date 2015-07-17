@@ -1,16 +1,13 @@
 package graphics;
 
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 
 import data.Plateau;
 import data.Shape;
@@ -50,7 +47,7 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 				motion.notify();
 			}
 		}
-		
+//		
 //		setLocation(shape.getColumn()*30, shape.getLine()*30);
 	}
 	
@@ -71,9 +68,7 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	
 	@Override
 	public void mouseClicked(MouseEvent ev) {
-		p.popShape(shape);
-		shape.setLocation(4, 4);
-		p.putShape(shape);
+		
 	}
 	
 	@Override
@@ -183,7 +178,7 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 						setLocation(realColumn, realLine);
 						
 						try {
-							Thread.sleep(2);
+							Thread.sleep(1);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
