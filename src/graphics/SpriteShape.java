@@ -21,16 +21,12 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	private int lineMouse, columnMouse;
 	private int lineClickedMouse, columnClickedMouse;
 	
-	private Motion motion;
 	
 	/** Constructeur */
 	public SpriteShape(Plateau p, Shape shape) {
 		super();
 		this.p = p;
 		this.shape = shape;
-		
-		this.motion = new Motion();
-		motion.start();
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -41,17 +37,9 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 	
 	@Override
 	public void update(Observable o, Object object) {
-		if (!p.isLocked()) {
-			motion.moveTo(shape.getLine(), shape.getColumn());
-			if (motion.isWaiting()) {
-				synchronized(motion) {
-					motion.notify();
-				}
-			}
-		} else {
-			setLocation(shape.getColumn()*30, shape.getLine()*30);
-		}
+		setLocation(shape.getColumn()*30, shape.getLine()*30);
 	}
+	
 	
 	/** Dessine la shape */
 	public void paintComponent(Graphics g) {
@@ -121,74 +109,6 @@ public class SpriteShape extends JComponent implements MouseListener, MouseMotio
 		
 	}
 	
-	/** Thread prive */
-	private class Motion extends Thread {
-		
-		private int line, column, realLine, realColumn;
-		private boolean wait;
-		
-		/** Constructeur */
-		public Motion() {
-			this.line = shape.getLine();
-			this.column = shape.getColumn();
-			this.realLine = shape.getLine() * 30;
-			this.realColumn = shape.getColumn() * 30;
-			this.wait = true;
-		}
-		
-		public boolean isWaiting() {
-			return wait;
-		}
-		
-		public void moveTo(int line, int column) {
-			this.line = line;
-			this.column = column;
-		}
-		
-		private boolean isMoving() {
-			return ((line * 30 != realLine) || (column * 30 != realColumn));
-		}
-		
-		@Override
-		public void run() {
-			
-			synchronized(this) {
-				while (true) {
-					
-					try {
-						wait = true;
-						wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					wait = false;
-					
-					while (isMoving()) {
-						
-						if (line * 30 < realLine) {
-							realLine--;
-						} else if (line * 30 > realLine) {
-							realLine++;
-						}
-						
-						if (column * 30 < realColumn) {
-							realColumn--;
-						} else if (column * 30 > realColumn) {
-							realColumn++;
-						}
-						
-						setLocation(realColumn, realLine);
-						
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-		
-	}
+	
 	
 }
