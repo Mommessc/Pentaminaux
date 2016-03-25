@@ -3,9 +3,11 @@ package graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import data.Plateau;
@@ -40,11 +42,44 @@ public class BoardGame extends JComponent implements Observer {
 		repaint();
 	}
 	
-	@Override
-	public void update(Observable obs, Object object) {
+	
+	/*public void update(Observable obs, Object object) {
 		Plateau p = (Plateau) obs; 
 		Shape shape = (Shape) object;
-		addShape(p, shape);
+		
+		if(shape == null){
+			System.out.println("i'm here!");
+			//Container c = this.getContentPane();
+			java.awt.image.BufferedImage im = new java.awt.image.BufferedImage(this.getWidth(), this.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
+			this.paint(im.getGraphics());
+			try {
+				ImageIO.write(im, "PNG", new java.io.File("Images/shot.png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else{
+			addShape(p, shape);
+		}
+		
+	}*/
+	
+	@Override
+	public void update(Observable obs, Object object) {
+		//Plateau p = (Plateau) obs; 
+		
+		int a = (Integer)object;
+		java.awt.image.BufferedImage im = new java.awt.image.BufferedImage(this.getWidth(), this.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		this.paint(im.getGraphics());
+		try {
+			ImageIO.write(im, "PNG", new java.io.File("Images/shot_" + a + ".png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+			//addShape(p, shape);
 	}
 	
 	/** Dessine le plateau */

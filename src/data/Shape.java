@@ -10,7 +10,9 @@ public class Shape extends Observable implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	Point point;
-	public int id;
+	public int transfoId;
+	public int transfoNb;
+	public int correctId;
 	private ArrayList<int[][]> transfo;
 	private Color color;
 	
@@ -18,8 +20,10 @@ public class Shape extends Observable implements Serializable {
 	public Shape(int line, int column, int[][] array, Color color) {
 		this.point = new Point(line, column);
 		this.color = color;
-		this.id = 0;
+		this.transfoId = 0;
 		this.transfo = createTransfo(array);
+		this.transfoNb = this.transfo.size();
+		this.correctId = -1;
 	}
 	
 	/** Constructeur */
@@ -33,8 +37,10 @@ public class Shape extends Observable implements Serializable {
 		this.point.x = s.point.x;
 		this.point.y = s.point.y;
 		this.color = s.color;
-		this.id = 0;
+		this.transfoId = 0;
 		this.transfo = createTransfo(s.transfo.get(0));
+		this.transfoNb = this.transfo.size();
+		this.correctId = -1;
 	}
 	
 	
@@ -57,12 +63,12 @@ public class Shape extends Observable implements Serializable {
 	
 	/** Retourne la largeur */
 	public int getWidth() {
-		return transfo.get(id)[0].length;
+		return transfo.get(transfoId)[0].length;
 	}
 	
 	/** Retourne la hauteur */
 	public int getHeight() {
-		return transfo.get(id).length;
+		return transfo.get(transfoId).length;
 	}
 	
 	/** Retourne la couleur */
@@ -72,7 +78,7 @@ public class Shape extends Observable implements Serializable {
 	
 	/** Retourne vrai si la case (i, j) est occupee */
 	public boolean busyCase(int i, int j) {
-		return (transfo.get(id))[i][j] != 0;
+		return (transfo.get(transfoId))[i][j] != 0;
 	}
 	
 	/** Place la shape en position (line, column) */
@@ -163,9 +169,9 @@ public class Shape extends Observable implements Serializable {
 	
 	public String toString() {
 		String s = "";
-		for (int j = 0; j < transfo.get(id).length; j++) {
-			for (int i = 0; i < transfo.get(id)[j].length; i++) {
-				s += transfo.get(id)[j][i] + " ";
+		for (int j = 0; j < transfo.get(transfoId).length; j++) {
+			for (int i = 0; i < transfo.get(transfoId)[j].length; i++) {
+				s += transfo.get(transfoId)[j][i] + " ";
 			}
 			s += "\n";
 		}

@@ -14,6 +14,7 @@ public class Plateau extends Observable implements Serializable {
 	private int[][] array;
 	private ArrayList<Shape> listShape;
 	boolean lock;
+	private int nb_sol;
 	
 	/** Constructeur */
 	public Plateau(int width, int height) {
@@ -29,6 +30,7 @@ public class Plateau extends Observable implements Serializable {
 		}
 		this.listShape = new ArrayList<Shape>();
 		this.lock = false;
+		this.nb_sol = 0;
 	}
 	
 	/** Retourne la largeur du plateau */
@@ -176,8 +178,8 @@ public class Plateau extends Observable implements Serializable {
 		listShape.add(shape);
 		shape.setLocation(line, column);
 		putShape(shape);
-		setChanged();
-		notifyObservers(shape);
+		//setChanged();
+		//notifyObservers(shape);
 	}
 	
 	/** Retire toutes les shapes du plateau */
@@ -235,13 +237,20 @@ public class Plateau extends Observable implements Serializable {
 			popShape(shape);
 		}
 		
-		ArrayList<Point> arrayPoint = resolutionAux(0);
+		//if(!transfo){//resolution normale
+			ArrayList<Point> arrayPoint = resolutionAux(0);
+		/*}
+		else{//resolution avec transfo
+			ArrayList<Point> arrayPoint = resoAuxTranso()
+		}*/
+		
 		if (arrayPoint == null) {
 			arrayPoint = old_arrayPoint;
 		}
 		
 		for (Shape shape : getListShape()) {
 			shape.setLocation(arrayPoint.get(getListShape().indexOf(shape)));
+			shape.transfoId = shape.correctId;
 			putShape(shape);
 		}
 		
@@ -251,27 +260,75 @@ public class Plateau extends Observable implements Serializable {
 	/** Methode recursive de resolution */
 	private ArrayList<Point> resolutionAux(int id) {
 		if (checkWin()) {
-			return new ArrayList<Point>();
+			setChanged();
+			notifyObservers(nb_sol++);
+			//return new ArrayList<Point>();
+			return null;
 		}
 		
 		ArrayList<Point> arrayPoint = null;
 		Shape shape = listShape.get(id);
-		for (Point point : getAllMove(shape)) {
-			shape.setLocation(point);
-			putShape(shape);
+		
+		//pour toutes les transfos de la piece
+		for(int idtransfo = 0; idtransfo<shape.transfoNb; idtransfo++){
+			//set le id de la transfo
+			shape.transfoId = idtransfo;
 			
-			if (positionPossible(id)) {
-				arrayPoint = resolutionAux(id+1);
+			for (Point point : getAllMove(shape)) {
+				shape.setLocation(point);
+				putShape(shape);
+				
+				/*try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				
+				if (positionPossible(id)) {
+					arrayPoint = resolutionAux(id+1);
+				}
+				
+				popShape(shape);
+				
+				if (arrayPoint != null) {
+					arrayPoint.add(0, shape.getPoint());
+					shape.correctId = idtransfo;
+					return arrayPoint;
+				}
 			}
 			
-			popShape(shape);
-			
-			if (arrayPoint != null) {
-				arrayPoint.add(0, shape.getPoint());
-				return arrayPoint;
-			}
 		}
 		
+		
+		
 		return null;
+	}
+
+	public void solveTransfo() {
+		lock = true;
+		
+		Comparator<Shape> c = new Comparator<Shape>() {
+			@Override
+			public int compare(Shape shape1, Shape shape2) {
+				int surface1 = shape1.getWidth() * shape1.getHeight();
+				int surface2 = shape2.getWidth() * shape2.getHeight();
+				return (surface2 - surface1);
+			}
+			
+		};
+		Collections.sort(getListShape(), c);
+		
+		//recuperation des emplacements des shapes d'origine
+		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
+		for (Shape shape : getListShape()) {
+			old_arrayPoint.add(new Point(shape.getPoint()));
+			popShape(shape); //les shapes sont retirees du plateau
+		}
+		
+		
+		//faire algo resolution with transfo ici
+		
+		lock = false;
 	}
 }
