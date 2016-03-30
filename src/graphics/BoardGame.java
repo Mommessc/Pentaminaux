@@ -17,12 +17,14 @@ public class BoardGame extends JComponent implements Observer {
 	
 	private static final long serialVersionUID = 1L;
 	private int boardWidth, boardHeight;
+	private int nb_sol;
 	
 	/** Constructeur */
 	public BoardGame(Plateau p) {
 		super();
 		this.boardWidth = p.getWidth() - 8;
 		this.boardHeight = p.getHeight() - 8;
+		this.nb_sol = 1;
 		
 		p.addObserver(this);
 		
@@ -43,7 +45,7 @@ public class BoardGame extends JComponent implements Observer {
 	}
 	
 	
-	/*public void update(Observable obs, Object object) {
+	public void update(Observable obs, Object object) {
 		Plateau p = (Plateau) obs; 
 		Shape shape = (Shape) object;
 		
@@ -53,7 +55,7 @@ public class BoardGame extends JComponent implements Observer {
 			java.awt.image.BufferedImage im = new java.awt.image.BufferedImage(this.getWidth(), this.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
 			this.paint(im.getGraphics());
 			try {
-				ImageIO.write(im, "PNG", new java.io.File("Images/shot.png"));
+				ImageIO.write(im, "PNG", new java.io.File("Images/shot_" + (nb_sol++) + ".png"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -63,8 +65,8 @@ public class BoardGame extends JComponent implements Observer {
 			addShape(p, shape);
 		}
 		
-	}*/
-	
+	}
+	/*
 	@Override
 	public void update(Observable obs, Object object) {
 		//Plateau p = (Plateau) obs; 
@@ -80,7 +82,7 @@ public class BoardGame extends JComponent implements Observer {
 		}
 		
 			//addShape(p, shape);
-	}
+	}*/
 	
 	/** Dessine le plateau */
 	public void paintComponent(Graphics g) {

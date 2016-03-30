@@ -14,7 +14,6 @@ public class Plateau extends Observable implements Serializable {
 	private int[][] array;
 	private ArrayList<Shape> listShape;
 	boolean lock;
-	private int nb_sol;
 	
 	/** Constructeur */
 	public Plateau(int width, int height) {
@@ -30,7 +29,6 @@ public class Plateau extends Observable implements Serializable {
 		}
 		this.listShape = new ArrayList<Shape>();
 		this.lock = false;
-		this.nb_sol = 0;
 	}
 	
 	/** Retourne la largeur du plateau */
@@ -178,8 +176,8 @@ public class Plateau extends Observable implements Serializable {
 		listShape.add(shape);
 		shape.setLocation(line, column);
 		putShape(shape);
-		//setChanged();
-		//notifyObservers(shape);
+		setChanged();
+		notifyObservers(shape);
 	}
 	
 	/** Retire toutes les shapes du plateau */
@@ -235,6 +233,8 @@ public class Plateau extends Observable implements Serializable {
 		for (Shape shape : getListShape()) {
 			old_arrayPoint.add(new Point(shape.getPoint()));
 			popShape(shape);
+			
+			//System.out.println("shape :\n" + shape);
 		}
 		
 		//if(!transfo){//resolution normale
@@ -261,7 +261,7 @@ public class Plateau extends Observable implements Serializable {
 	private ArrayList<Point> resolutionAux(int id) {
 		if (checkWin()) {
 			setChanged();
-			notifyObservers(nb_sol++);
+			notifyObservers(null);
 			//return new ArrayList<Point>();
 			return null;
 		}
@@ -278,12 +278,12 @@ public class Plateau extends Observable implements Serializable {
 				shape.setLocation(point);
 				putShape(shape);
 				
-				/*try {
-					Thread.sleep(1000);
+				try {
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}*/
+				}
 				
 				if (positionPossible(id)) {
 					arrayPoint = resolutionAux(id+1);

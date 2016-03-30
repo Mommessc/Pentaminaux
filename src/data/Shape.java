@@ -169,11 +169,15 @@ public class Shape extends Observable implements Serializable {
 	
 	public String toString() {
 		String s = "";
-		for (int j = 0; j < transfo.get(transfoId).length; j++) {
-			for (int i = 0; i < transfo.get(transfoId)[j].length; i++) {
-				s += transfo.get(transfoId)[j][i] + " ";
+		for(int id = 0; id <transfoNb; ++id){
+			s+= "length j: " + transfo.get(id).length + " length i: " + transfo.get(id)[0].length + "\n";
+			for (int j = 0; j < transfo.get(id).length; j++) {
+				for (int i = 0; i < transfo.get(id)[j].length; i++) {
+					s += transfo.get(id)[j][i] + " ";
+				}
+				s += "\n";
 			}
-			s += "\n";
+			s+= "\n";
 		}
 		return s;
 	}
