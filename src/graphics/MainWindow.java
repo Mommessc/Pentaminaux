@@ -55,6 +55,9 @@ public class MainWindow implements Observer {
 	@Override
 	public void update(Observable o, Object object) {
 		Shape shape = (Shape) object;
+		
+		System.out.println(shape);
+		
 		boolean trouve = false;
 		int h = p.getHeight() - shape.getHeight() + 1;
 		int w = p.getWidth() - shape.getWidth() + 1;
@@ -81,7 +84,7 @@ public class MainWindow implements Observer {
 		
 		private static final long serialVersionUID = 1L;
 		JMenu fichier, edit;
-		JMenuItem clear, save, end, newShape, soluce, soltransfo;
+		JMenuItem clear, save, end, newShape, soluce;
 		
 		/** Constructeur */
 		public Menu() {
@@ -97,11 +100,9 @@ public class MainWindow implements Observer {
 			
 			newShape = new JMenuItem("Nouvelle forme");
 			soluce = new JMenuItem("Resolution");
-			soltransfo = new JMenuItem("Solve transfo");
 			edit = new JMenu("Edit");
 			edit.add(newShape);
 			edit.add(soluce);
-			edit.add(soltransfo);
 			
 			// Ajout des menus
 			this.add(fichier);
@@ -150,12 +151,12 @@ public class MainWindow implements Observer {
 							long time = System.currentTimeMillis();
 							p.resolution();
 							long millis = System.currentTimeMillis() - time;
-							if (!p.checkWin()) {
+							/*if (!p.checkWin()) {
 								JOptionPane.showMessageDialog(frame,
 									    "Aucune solution trouvee",
 									    "Resultat",
 									    JOptionPane.WARNING_MESSAGE);
-							} else {
+							} else {*/
 								String str = String.format("%02dh %02dm %02ds", 
 										TimeUnit.MILLISECONDS.toHours(millis),
 										TimeUnit.MILLISECONDS.toMinutes(millis) -  
@@ -163,48 +164,16 @@ public class MainWindow implements Observer {
 										TimeUnit.MILLISECONDS.toSeconds(millis) - 
 										TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));   
 								JOptionPane.showMessageDialog(frame,
-									    "Solution trouvee en " + str,
+									    "Termine en " + str,
 									    "Resultat",
 									    JOptionPane.DEFAULT_OPTION);
-							}
+							//}
 						}
 					});
 					t.start();
 				}
 			});
 		
-			
-			soltransfo.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					Thread t = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							long time = System.currentTimeMillis();
-							p.solveTransfo();
-							long millis = System.currentTimeMillis() - time;
-							if (!p.checkWin()) {
-								JOptionPane.showMessageDialog(frame,
-									    "Aucune solution trouvee",
-									    "Resultat",
-									    JOptionPane.WARNING_MESSAGE);
-							} else {
-								String str = String.format("%02dh %02dm %02ds", 
-										TimeUnit.MILLISECONDS.toHours(millis),
-										TimeUnit.MILLISECONDS.toMinutes(millis) -  
-										TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-										TimeUnit.MILLISECONDS.toSeconds(millis) - 
-										TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));   
-								JOptionPane.showMessageDialog(frame,
-									    "Solution trouvee en " + str,
-									    "Resultat",
-									    JOptionPane.DEFAULT_OPTION);
-							}
-						}
-					});
-					t.start();
-				}
-			});
 		
 			
 			

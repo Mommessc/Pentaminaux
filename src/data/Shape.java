@@ -23,7 +23,7 @@ public class Shape extends Observable implements Serializable {
 		this.transfoId = 0;
 		this.transfo = createTransfo(array);
 		this.transfoNb = this.transfo.size();
-		this.correctId = -1;
+		this.correctId = 0;
 	}
 	
 	/** Constructeur */
@@ -40,7 +40,7 @@ public class Shape extends Observable implements Serializable {
 		this.transfoId = 0;
 		this.transfo = createTransfo(s.transfo.get(0));
 		this.transfoNb = this.transfo.size();
-		this.correctId = -1;
+		this.correctId = 0;
 	}
 	
 	
@@ -163,7 +163,43 @@ public class Shape extends Observable implements Serializable {
 		}
 		list.add(tab24);
 		
+		
+		//TODO enliminer les transfos identiques
+		for(int i=7; i>0; i--){
+			int[][] a = list.get(i);
+			for(int j = i-1; j>=0; j--){
+				if(sameTransfo(a, list.get(j))){
+					list.remove(i);
+					break;
+				}
+			}
+		}
+		
+		
+		
 		return list;
+	}
+	
+	private boolean sameTransfo(int[][] a, int[][] b){
+		int ha, wa, hb, wb;
+		ha = a.length;
+		wa = a[0].length;
+		hb = b.length;
+		wb = b[0].length;
+		
+		if( (ha != hb) || (wa != wb) ){
+			return false;
+		}
+		
+		for(int i=0; i<ha; ++i){
+			for(int j=0; j<wa; ++j){
+				if(a[i][j] != b[i][j]){
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	

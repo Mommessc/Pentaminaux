@@ -80,7 +80,7 @@ public class Plateau extends Observable implements Serializable {
 		}
 		for (int i = 0; i < shape.getHeight(); i++) {
 			for (int j = 0; j < shape.getWidth(); j++) {
-				if (shape.busyCase(i, j) && getBlock(line+i, column+j) > 0) {
+				if (shape.busyCase(i, j) && (getBlock(line+i, column+j) > 0) ) {
 					return false;
 				}
 			}
@@ -128,12 +128,14 @@ public class Plateau extends Observable implements Serializable {
 		for (int i = 0; i < tmp.getHeight()-8 && isPossible; i++) {
 			for (int j = 0; j < tmp.getWidth()-8 && isPossible; j++) {
 				if (tmp.getBlock(i+4, j+4) == 0) {
-					isPossible = false;
+					//isPossible = false;
+					return false;
 				}
 			}
 		}
 		
-		return isPossible;
+		return true;
+		//return isPossible;
 	}
 	
 	/** Retourne vrai si le plateau est entierement rempli */
@@ -214,10 +216,7 @@ public class Plateau extends Observable implements Serializable {
 		}
 	}
 	
-	/** Resout le casse tete */
-	public void resolution() {
-		lock = true;
-		
+	private void sortList(){
 		Comparator<Shape> c = new Comparator<Shape>() {
 			@Override
 			public int compare(Shape shape1, Shape shape2) {
@@ -228,21 +227,23 @@ public class Plateau extends Observable implements Serializable {
 			
 		};
 		Collections.sort(getListShape(), c);
+	}
+	
+	/** Resout le casse tete */
+	public void resolution() {
+		lock = true;
+		
+		sortList();
 		
 		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
 		for (Shape shape : getListShape()) {
 			old_arrayPoint.add(new Point(shape.getPoint()));
 			popShape(shape);
-			
+			shape.correctId = 0;
 			//System.out.println("shape :\n" + shape);
 		}
 		
-		//if(!transfo){//resolution normale
-			ArrayList<Point> arrayPoint = resolutionAux(0);
-		/*}
-		else{//resolution avec transfo
-			ArrayList<Point> arrayPoint = resoAuxTranso()
-		}*/
+		ArrayList<Point> arrayPoint = resolutionAux(0);
 		
 		if (arrayPoint == null) {
 			arrayPoint = old_arrayPoint;
@@ -261,8 +262,12 @@ public class Plateau extends Observable implements Serializable {
 	private ArrayList<Point> resolutionAux(int id) {
 		if (checkWin()) {
 			setChanged();
-			notifyObservers(null);
+			notifyObservers(null); //pour print la solution trouvee
 			//return new ArrayList<Point>();
+			return null;
+		}
+		
+		if(id == listShape.size()){
 			return null;
 		}
 		
@@ -270,7 +275,7 @@ public class Plateau extends Observable implements Serializable {
 		Shape shape = listShape.get(id);
 		
 		//pour toutes les transfos de la piece
-		for(int idtransfo = 0; idtransfo<shape.transfoNb; idtransfo++){
+		for(int idtransfo = 0; idtransfo < shape.transfoNb; idtransfo++){
 			//set le id de la transfo
 			shape.transfoId = idtransfo;
 			
@@ -278,16 +283,17 @@ public class Plateau extends Observable implements Serializable {
 				shape.setLocation(point);
 				putShape(shape);
 				
+				System.out.println(this);
+				
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				if (positionPossible(id)) {
+				//if (positionPossible(id)) {
 					arrayPoint = resolutionAux(id+1);
-				}
+				//}
 				
 				popShape(shape);
 				
@@ -300,35 +306,20 @@ public class Plateau extends Observable implements Serializable {
 			
 		}
 		
-		
-		
 		return null;
 	}
 
-	public void solveTransfo() {
-		lock = true;
+	
+	public String toString(){
+		String s = "";
 		
-		Comparator<Shape> c = new Comparator<Shape>() {
-			@Override
-			public int compare(Shape shape1, Shape shape2) {
-				int surface1 = shape1.getWidth() * shape1.getHeight();
-				int surface2 = shape2.getWidth() * shape2.getHeight();
-				return (surface2 - surface1);
+		for (int i = 4; i < height-4; i++) {
+			for (int j = 4; j < width-4; j++) {
+				s += array[i][j] + " ";
 			}
-			
-		};
-		Collections.sort(getListShape(), c);
-		
-		//recuperation des emplacements des shapes d'origine
-		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
-		for (Shape shape : getListShape()) {
-			old_arrayPoint.add(new Point(shape.getPoint()));
-			popShape(shape); //les shapes sont retirees du plateau
+			s+= "\n";
 		}
 		
-		
-		//faire algo resolution with transfo ici
-		
-		lock = false;
+		return s;
 	}
 }
