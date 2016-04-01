@@ -93,6 +93,7 @@ public class EditFrame extends Observable {
 					if (!boardsetting.isEmpty()) {
 						setChanged();
 						notifyObservers(boardsetting.getShape());
+						boardsetting.clear();
 					}
 				}
 			});

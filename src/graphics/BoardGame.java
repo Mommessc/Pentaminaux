@@ -50,7 +50,6 @@ public class BoardGame extends JComponent implements Observer {
 		Shape shape = (Shape) object;
 		
 		if(shape == null){
-			System.out.println("i'm here!");
 			//Container c = this.getContentPane();
 			java.awt.image.BufferedImage im = new java.awt.image.BufferedImage(this.getWidth(), this.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
 			this.paint(im.getGraphics());

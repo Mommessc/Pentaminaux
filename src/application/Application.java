@@ -13,8 +13,8 @@ import data.Plateau;
 public class Application {
 	
 	public static String FILENAME = "test";
-	public static int HAUTEUR = 3;
-	public static int LARGEUR = 6;
+	public static int HAUTEUR = 10;
+	public static int LARGEUR = 5;
 	
 	/** Lancement de l'application */
 	public static void main(String[] args) {

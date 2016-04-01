@@ -15,6 +15,7 @@ public class Shape extends Observable implements Serializable {
 	public int correctId;
 	private ArrayList<int[][]> transfo;
 	private Color color;
+	private int index;
 	
 	/** Constructeur */
 	public Shape(int line, int column, int[][] array, Color color) {
@@ -24,6 +25,7 @@ public class Shape extends Observable implements Serializable {
 		this.transfo = createTransfo(array);
 		this.transfoNb = this.transfo.size();
 		this.correctId = 0;
+		this.index = 1;
 	}
 	
 	/** Constructeur */
@@ -41,6 +43,7 @@ public class Shape extends Observable implements Serializable {
 		this.transfo = createTransfo(s.transfo.get(0));
 		this.transfoNb = this.transfo.size();
 		this.correctId = 0;
+		this.index = 1;
 	}
 	
 	
@@ -74,6 +77,14 @@ public class Shape extends Observable implements Serializable {
 	/** Retourne la couleur */
 	public final Color getColor() {
 		return color;
+	}
+	
+	public void setIndex(int i) {
+		this.index = i;
+	}
+	
+	public int getIndex() {
+		return this.index;
 	}
 	
 	/** Retourne vrai si la case (i, j) est occupee */
@@ -163,8 +174,7 @@ public class Shape extends Observable implements Serializable {
 		}
 		list.add(tab24);
 		
-		
-		//TODO enliminer les transfos identiques
+		//elimine les transformations identiques
 		for(int i=7; i>0; i--){
 			int[][] a = list.get(i);
 			for(int j = i-1; j>=0; j--){
@@ -174,8 +184,6 @@ public class Shape extends Observable implements Serializable {
 				}
 			}
 		}
-		
-		
 		
 		return list;
 	}
@@ -217,4 +225,6 @@ public class Shape extends Observable implements Serializable {
 		}
 		return s;
 	}
+
+	
 }

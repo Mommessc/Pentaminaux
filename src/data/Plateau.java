@@ -143,7 +143,7 @@ public class Plateau extends Observable implements Serializable {
 		for (int i = 0; i < getHeight(); i++) {
 			for (int j = 0; j < getWidth(); j++) {
 				if (i >= 4 && j >= 4 && j < getWidth()-4 && i < getHeight()-4) {
-					if (getBlock(i, j) != 1) {
+					if (getBlock(i, j) == 0) {
 						return false;
 					}
 				} else {
@@ -197,7 +197,8 @@ public class Plateau extends Observable implements Serializable {
 		for (int i = 0; i < shape.getHeight(); i++) {
 			for (int j = 0; j < shape.getWidth(); j++) {
 				if (shape.busyCase(i, j) && valid(line+i, column+j)) {
-					array[line+i][column+j] += 1;
+					//setBlock(line+i, column+j, 1);
+					setBlock(line+i, column+j, shape.getIndex());
 				}
 			}
 		}
@@ -210,7 +211,7 @@ public class Plateau extends Observable implements Serializable {
 		for (int i = 0; i < shape.getHeight(); i++) {
 			for (int j = 0; j < shape.getWidth(); j++) {
 				if (shape.busyCase(i, j) && valid(line+i, column+j)) {
-					array[line+i][column+j] -= 1;
+					setBlock(line+i, column+j, 0);
 				}
 			}
 		}
@@ -226,7 +227,11 @@ public class Plateau extends Observable implements Serializable {
 			}
 			
 		};
-		Collections.sort(getListShape(), c);
+		ArrayList<Shape> list = getListShape();
+		Collections.sort(list, c);
+		for(int i = 0; i<list.size(); i++){
+			list.get(i).setIndex(i+1);
+		}
 	}
 	
 	/** Resout le casse tete */
@@ -240,6 +245,7 @@ public class Plateau extends Observable implements Serializable {
 			old_arrayPoint.add(new Point(shape.getPoint()));
 			popShape(shape);
 			shape.correctId = 0;
+			//shape.setIndex(1);
 			//System.out.println("shape :\n" + shape);
 		}
 		
@@ -261,9 +267,81 @@ public class Plateau extends Observable implements Serializable {
 	/** Methode recursive de resolution */
 	private ArrayList<Point> resolutionAux(int id) {
 		if (checkWin()) {
+			System.out.println(this);
+			return new ArrayList<Point>();
+		}
+		
+		if(id == listShape.size()){
+			return null;
+		}
+		
+		ArrayList<Point> arrayPoint = null;
+		Shape shape = listShape.get(id);
+		shape.transfoId = 0;
+			
+		for (Point point : getAllMove(shape)) {
+			shape.setLocation(point);
+			putShape(shape);
+			
+			System.out.println(this);
+			
+			/*try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
+			
+			//if (positionPossible(id)) {
+				arrayPoint = resolutionAux(id+1);
+			//}
+			
+			popShape(shape);
+			
+			if (arrayPoint != null) {
+				arrayPoint.add(0, shape.getPoint());
+				shape.correctId = 0;
+				return arrayPoint;
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	/** Trouve toutes les solutions possibles avec transformations des shapes*/
+	public void resolutionTransfo() {
+		lock = true;
+		
+		sortList();
+		
+		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
+		for (Shape shape : getListShape()) {
+			old_arrayPoint.add(new Point(shape.getPoint()));
+			popShape(shape);
+			shape.correctId = 0;
+			//System.out.println("shape :\n" + shape);
+		}
+		
+		ArrayList<Point> arrayPoint = resolutionAuxTransfo(0);
+		
+		if (arrayPoint == null) {
+			arrayPoint = old_arrayPoint;
+		}
+		
+		for (Shape shape : getListShape()) {
+			shape.setLocation(arrayPoint.get(getListShape().indexOf(shape)));
+			shape.transfoId = shape.correctId;
+			putShape(shape);
+		}
+		
+		lock = false;
+	}
+	
+	/** Methode recursive de resolution avec transformations des shapes */
+	private ArrayList<Point> resolutionAuxTransfo(int id) {
+		if (checkWin()) {
 			setChanged();
 			notifyObservers(null); //pour print la solution trouvee
-			//return new ArrayList<Point>();
 			return null;
 		}
 		
@@ -283,13 +361,13 @@ public class Plateau extends Observable implements Serializable {
 				shape.setLocation(point);
 				putShape(shape);
 				
-				System.out.println(this);
+				//System.out.println(this);
 				
-				try {
+				/*try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-				}
+				}*/
 				
 				//if (positionPossible(id)) {
 					arrayPoint = resolutionAux(id+1);
