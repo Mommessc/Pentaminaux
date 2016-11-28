@@ -84,7 +84,7 @@ public class MainWindow implements Observer {
 		
 		private static final long serialVersionUID = 1L;
 		JMenu fichier, edit;
-		JMenuItem clear, save, end, newShape, soluce, simplesol;
+		JMenuItem clear, save, end, newShape, soluce, simplesol, solveintern, printsol;
 		
 		/** Constructeur */
 		public Menu() {
@@ -101,10 +101,14 @@ public class MainWindow implements Observer {
 			newShape = new JMenuItem("Nouvelle forme");
 			simplesol = new JMenuItem("Simple solve");
 			soluce = new JMenuItem("Solve with transfos");
+			solveintern = new JMenuItem("Solve internaly");
+			printsol = new JMenuItem("Print solutions found");
 			edit = new JMenu("Edit");
 			edit.add(newShape);
 			edit.add(simplesol);
 			edit.add(soluce);
+			edit.add(solveintern);
+			edit.add(printsol);
 			
 			// Ajout des menus
 			this.add(fichier);
@@ -209,7 +213,45 @@ public class MainWindow implements Observer {
 				}
 			});
 		
-			
+			solveintern.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							long time = System.currentTimeMillis();
+							int nb_sol = p.solveIntern();
+							long millis = System.currentTimeMillis() - time;
+							String str = String.format("%02dh %02dm %02ds", 
+									TimeUnit.MILLISECONDS.toHours(millis),
+									TimeUnit.MILLISECONDS.toMinutes(millis) -  
+									TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+									TimeUnit.MILLISECONDS.toSeconds(millis) - 
+									TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));   
+							JOptionPane.showMessageDialog(frame,
+								    nb_sol + " solutions trouvees en " + str,
+								    "Resultat",
+								    JOptionPane.DEFAULT_OPTION);
+						}
+					});
+					t.start();
+				}
+			});
+		
+			printsol.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					//clear la fenetre avant de print les solutions
+					boardGame.printsol();
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					boardGame.free=true;
+				}
+			});
 			
 		}
 	}

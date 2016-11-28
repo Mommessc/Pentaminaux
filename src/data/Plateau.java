@@ -1,5 +1,6 @@
 package data;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Plateau extends Observable implements Serializable {
 	private int width, height;
 	private int[][] array;
 	private ArrayList<Shape> listShape;
+	private ArrayList<int[][]> list_sol;
 	boolean lock;
 	
 	/** Constructeur */
@@ -64,6 +66,11 @@ public class Plateau extends Observable implements Serializable {
 	/** Retourne la liste des shapes du plateau */
 	public final ArrayList<Shape> getListShape() {
 		return listShape;
+	}
+	
+	/** Retourne la liste des solution trouvees */
+	public final ArrayList<int[][]> getListSol() {
+		return list_sol;
 	}
 	
 	/** Set le contenu de la case (i, j) */
@@ -283,7 +290,7 @@ public class Plateau extends Observable implements Serializable {
 			shape.setLocation(point);
 			putShape(shape);
 			
-			System.out.println(this);
+			//System.out.println(this);
 			
 			/*try {
 				Thread.sleep(500);
@@ -370,7 +377,7 @@ public class Plateau extends Observable implements Serializable {
 				}*/
 				
 				//if (positionPossible(id)) {
-					arrayPoint = resolutionAux(id+1);
+					arrayPoint = resolutionAuxTransfo(id+1);
 				//}
 				
 				popShape(shape);
@@ -385,6 +392,67 @@ public class Plateau extends Observable implements Serializable {
 		}
 		
 		return null;
+	}
+	
+	
+	public int solveIntern(){
+		lock = true;
+		sortList();//sort the list and initialize the index of each shape
+		this.list_sol = new ArrayList<int[][]>();
+		
+		//ArrayList<Color> list_color = new ArrayList<Color>();
+		ArrayList<Point> old_arrayPoint = new ArrayList<Point>();
+		for (Shape shape : getListShape()) {
+			old_arrayPoint.add(new Point(shape.getPoint()));
+			popShape(shape);
+			shape.correctId = 0;
+		}
+		
+		int nb_sol = solveInternAux(0);
+		
+		System.out.println(nb_sol + " and size list: " + this.list_sol.size());
+		
+		lock = false;
+		return nb_sol;
+	}
+	
+	private int solveInternAux(int id) {
+		if (checkWin()) {
+			int[][] sol = new int[getHeight()][];
+			for (int i = 4; i < getHeight()-4; i++) {
+				sol[i] = new int[getWidth()];
+				for (int j = 4; j < getWidth()-4; j++) {
+					sol[i][j] = array[i][j];
+				}
+			}
+			this.list_sol.add(sol);
+			return 1;
+		}
+		
+		if(id == listShape.size()){//si toutes les pieces sont posees, stop
+			return 0;
+		}
+		
+		Shape shape = listShape.get(id);
+		int nb_sol = 0;
+		
+		//pour toutes les transfos de la piece
+		for(int idtransfo = 0; idtransfo < shape.transfoNb; idtransfo++){
+			//set le id de la transfo
+			shape.transfoId = idtransfo;
+			
+			for (Point point : getAllMove(shape)) {
+				//shape.setLocation(point);
+				shape.setLocationIntern(point);
+				putShape(shape);
+				
+				nb_sol += solveInternAux(id+1);
+				
+				popShape(shape);
+			}
+		}
+		
+		return nb_sol;
 	}
 
 	

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -18,6 +19,8 @@ public class BoardGame extends JComponent implements Observer {
 	private static final long serialVersionUID = 1L;
 	private int boardWidth, boardHeight;
 	private int nb_sol;
+	private Plateau p;
+	public Boolean free;
 	
 	/** Constructeur */
 	public BoardGame(Plateau p) {
@@ -25,6 +28,8 @@ public class BoardGame extends JComponent implements Observer {
 		this.boardWidth = p.getWidth() - 8;
 		this.boardHeight = p.getHeight() - 8;
 		this.nb_sol = 1;
+		this.p = p;
+		this.free = true;
 		
 		p.addObserver(this);
 		
@@ -50,13 +55,11 @@ public class BoardGame extends JComponent implements Observer {
 		Shape shape = (Shape) object;
 		
 		if(shape == null){
-			//Container c = this.getContentPane();
 			java.awt.image.BufferedImage im = new java.awt.image.BufferedImage(this.getWidth(), this.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
 			this.paint(im.getGraphics());
 			try {
 				ImageIO.write(im, "PNG", new java.io.File("Images/shot_" + (nb_sol++) + ".png"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -65,30 +68,51 @@ public class BoardGame extends JComponent implements Observer {
 		}
 		
 	}
-	/*
-	@Override
-	public void update(Observable obs, Object object) {
-		//Plateau p = (Plateau) obs; 
-		
-		int a = (Integer)object;
-		java.awt.image.BufferedImage im = new java.awt.image.BufferedImage(this.getWidth(), this.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
-		this.paint(im.getGraphics());
-		try {
-			ImageIO.write(im, "PNG", new java.io.File("Images/shot_" + a + ".png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	
+	public void printsol(){
+		/*ArrayList<Shape> listShapes = new ArrayList<Shape>();
+		for(Shape sh : p.getListShape()){
+			listShapes.add(new Shape(sh));
 		}
+		p.removeShapes();*/
+		System.out.println("i'm here");
+		this.removeAll();
+		//this.repaint();
 		
-			//addShape(p, shape);
-	}*/
+		this.free=false;
+		System.out.println("also here");
+		this.repaint();
+		//this.free=true;
+		System.out.println("said here !!");
+		for(Shape sh : p.getListShape()){
+			addShape(p,sh);
+			//p.addShape(sh,sh.getLine(), sh.getColumn());
+		}
+		//this.repaint();
+	}
 	
 	/** Dessine le plateau */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		
-		g.setColor(Color.darkGray);
-		g.fillRect(120, 120, boardWidth*30, boardHeight*30);
+		System.out.println("blabla");
+		if(free){
+			System.out.println("coucou" + free);
+			g.setColor(Color.darkGray);
+			g.fillRect(120, 120, boardWidth*30, boardHeight*30);
+		}
+		else{
+			System.out.println("and here");
+			ArrayList<Shape> list = p.getListShape();
+			for(int[][] array : p.getListSol()){
+				for (int i = 0; i < array.length; i++) {
+					for (int j = 0; j < array[i].length; j++) {
+						g.setColor( list.get(array[i][j]-1).getColor());
+						g.fillRect(j*30+121, i*30+121, 28, 28);
+					}
+				}
+			}
+			System.out.println("repaint done");
+		}
 	}
 }

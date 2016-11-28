@@ -99,9 +99,17 @@ public class Shape extends Observable implements Serializable {
 		notifyObservers();
 	}
 	
+	public void setLocationIntern(int line, int column) {
+		point.setLocation(line, column);
+	}
+	
 	/** Place la shape sur la position donnee par le point */
 	public void setLocation(Point point) {
 		setLocation((int) point.getX(), (int) point.getY());
+	}
+	
+	public void setLocationIntern(Point point) {
+		setLocationIntern((int) point.getX(), (int) point.getY());
 	}
 	
 	
